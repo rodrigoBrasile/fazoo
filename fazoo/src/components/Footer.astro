@@ -1,0 +1,158 @@
+---
+import Icon from './Icon.astro';
+import { site, categorias, linkWhatsApp } from '../config';
+
+const ano = new Date().getFullYear();
+---
+
+<footer class="rodape">
+  <div class="container grade">
+    <div class="bloco-marca">
+      <img src="/logo-fazoo-web.png" alt="Fazoo" width="640" height="260" loading="lazy" />
+      <p>{site.slogan}. Impressão 3D e bottons personalizados, feitos com cuidado em cada camada.</p>
+    </div>
+
+    <div>
+      <h3>Produtos</h3>
+      <ul>
+        {Object.entries(categorias).map(([id, c]) => (
+          <li>
+            <a href={`/?categoria=${id}#produtos`}>{c.nome}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
+      <h3>Contato</h3>
+      <ul>
+        <li>
+          <a href={linkWhatsApp()} target="_blank" rel="noopener">
+            <Icon nome="whatsapp" /> WhatsApp
+          </a>
+        </li>
+        <li>
+          <a href={site.instagram.url} target="_blank" rel="noopener">
+            <Icon nome="instagram" /> @{site.instagram.usuario}
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Marketplaces</h3>
+      <ul>
+        {site.marketplaces.map((m) => (
+          <li>
+            {m.url ? (
+              <a href={m.url} target="_blank" rel="noopener">{m.nome}</a>
+            ) : (
+              <span class="em-breve">{m.nome} <small>em breve</small></span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <div class="container base">
+    <p>© {ano} Fazoo. Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+<style>
+  .rodape {
+    border-top: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(4, 6, 42, 0.2), rgba(4, 6, 42, 0.85));
+    padding-top: 64px;
+  }
+
+  .grade {
+    display: grid;
+    grid-template-columns: 1.6fr repeat(3, 1fr);
+    gap: 40px;
+  }
+
+  .bloco-marca {
+    display: grid;
+    gap: 14px;
+    align-content: start;
+  }
+
+  .bloco-marca img {
+    width: 170px;
+    height: auto;
+    margin-left: -10px;
+  }
+
+  .bloco-marca p {
+    color: var(--muted);
+    max-width: 34ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 16px;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  a,
+  .em-breve {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--ink);
+  }
+
+  a :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  .em-breve small {
+    font-size: 0.75rem;
+    padding: 1px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+  }
+
+  .base {
+    margin-top: 48px;
+    padding-block: 24px 32px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 860px) {
+    .grade {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .bloco-marca {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .grade {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

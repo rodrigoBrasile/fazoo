@@ -1,0 +1,225 @@
+/* Fazoo: Vitrine Neon. Cores tiradas do logo. */
+:root {
+  --navy-950: #04062a;
+  --navy-900: #070a3a;
+  --navy-800: #0c1154;
+  --navy-700: #141a6e;
+  --blue: #2457ff;
+  --cyan: #1aa3ff;
+  --violet: #7b2bff;
+  --pink: #f227f0;
+  --pink-soft: #ff8cf6;
+
+  --ink: #f3f4ff;
+  --muted: #aeb2de;
+  --line: rgba(170, 178, 255, 0.16);
+  --glass: rgba(255, 255, 255, 0.05);
+  --glass-strong: rgba(255, 255, 255, 0.09);
+
+  --grad-brand: linear-gradient(110deg, var(--cyan), var(--blue) 35%, var(--violet) 65%, var(--pink));
+
+  --font-display: 'Fredoka', ui-rounded, 'Arial Rounded MT Bold', system-ui, sans-serif;
+  --font-body: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-hand: 'Caveat', 'Segoe Print', 'Bradley Hand', cursive;
+
+  --radius: 22px;
+  --radius-sm: 14px;
+  --container: 1180px;
+  --gutter: clamp(16px, 4vw, 32px);
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 96px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--navy-900);
+  background-image:
+    radial-gradient(60rem 42rem at 108% -8%, rgba(242, 39, 240, 0.26), transparent 62%),
+    radial-gradient(56rem 40rem at -14% 30%, rgba(26, 163, 255, 0.2), transparent 62%),
+    radial-gradient(50rem 40rem at 50% 120%, rgba(36, 87, 255, 0.28), transparent 60%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  line-height: 1.1;
+  margin: 0;
+  text-wrap: balance;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--pink-soft);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  padding-block: clamp(64px, 9vw, 112px);
+}
+
+.section-head {
+  display: grid;
+  gap: 14px;
+  max-width: 640px;
+  margin-bottom: clamp(32px, 5vw, 48px);
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cyan);
+}
+
+.section-title {
+  font-size: clamp(2rem, 4.4vw, 3rem);
+  font-weight: 700;
+}
+
+.lede {
+  color: var(--muted);
+  font-size: 1.15rem;
+  max-width: 60ch;
+}
+
+.grad-text {
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Botões */
+.btn {
+  --btn-bg: var(--glass-strong);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--btn-bg);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.btn svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.btn-pink {
+  --btn-bg: var(--pink);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 10px 30px -10px rgba(242, 39, 240, 0.8);
+}
+
+.btn-pink:hover {
+  background: #ff3cf9;
+  box-shadow: 0 14px 36px -10px rgba(242, 39, 240, 0.95);
+}
+
+.btn-white {
+  --btn-bg: #fff;
+  border-color: transparent;
+  color: var(--navy-900);
+}
+
+.btn-white:hover {
+  background: #fff;
+  box-shadow: 0 12px 30px -12px rgba(255, 255, 255, 0.6);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--glass);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

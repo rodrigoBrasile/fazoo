@@ -1,0 +1,526 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import ProductCard from '../components/ProductCard.astro';
+import ProductArt from '../components/ProductArt.astro';
+import Icon from '../components/Icon.astro';
+import { site, categorias, linkWhatsApp, type Categoria } from '../config';
+
+const produtos = (await getCollection('produtos')).sort((a, b) => a.data.ordem - b.data.ordem);
+const contagem = (c: Categoria) => produtos.filter((p) => p.data.categoria === c).length;
+const listaCategorias = Object.entries(categorias) as [Categoria, (typeof categorias)[Categoria]][];
+
+const passos = [
+  { titulo: 'Escolha', texto: 'Navegue pelos produtos ou pense na peça que você quer criar.' },
+  { titulo: 'Chame no WhatsApp', texto: 'Conte o que deseja. Para personalizados, mande a sua arte ou ideia.' },
+  { titulo: 'Receba o orçamento', texto: 'Combinamos cores, tamanho, prazo e forma de entrega.' },
+  { titulo: 'A gente faz', texto: 'Sua peça é produzida e preparada com cuidado para chegar até você.' },
+];
+---
+
+<Base>
+  <Hero />
+
+  <section class="section" id="produtos" aria-labelledby="titulo-produtos">
+    <div class="container">
+      <div class="cabeca-produtos">
+        <div class="section-head">
+          <span class="eyebrow">Vitrine</span>
+          <h2 class="section-title" id="titulo-produtos">Nossos produtos</h2>
+        </div>
+        <div class="filtros" role="group" aria-label="Filtrar por categoria">
+          <button type="button" class="filtro" data-filtro="todos" aria-pressed="true">Todos</button>
+          {listaCategorias.map(([id, c]) => (
+            <button type="button" class="filtro" data-filtro={id} aria-pressed="false">{c.nome}</button>
+          ))}
+        </div>
+      </div>
+
+      <div class="grade-produtos" data-grade>
+        {produtos.map((p, i) => <ProductCard produto={p} indice={i} />)}
+      </div>
+      <div class="vazio" data-vazio hidden>
+        <p>Novidades desta categoria chegando em breve.</p>
+        <a class="btn btn-pink" href={linkWhatsApp('Olá! Quero saber dos bottons da Fazoo.')} target="_blank" rel="noopener" data-vazio-link>
+          <Icon nome="whatsapp" /> Encomendar pelo WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section categorias" aria-labelledby="titulo-categorias">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">O que a gente faz</span>
+        <h2 class="section-title" id="titulo-categorias">Peças para cada momento, feitas do seu jeito</h2>
+      </div>
+      <div class="grade-cat">
+        {listaCategorias.map(([id, c], i) => (
+          <a class="cat" href={`/?categoria=${id}#produtos`} data-ir-categoria={id}>
+            <div class="cat-arte">
+              <ProductArt categoria={id} id={`cat-${id}`} variante={i * 2} />
+            </div>
+            <div class="cat-texto">
+              <h3>{c.nome}</h3>
+              <p>{c.descricao}</p>
+              <span class="cat-qtd">
+                {contagem(id) === 0 ? 'Em breve' : `${contagem(id)} ${contagem(id) === 1 ? 'produto' : 'produtos'}`}
+                <Icon nome="seta" />
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section como" id="como-pedir" aria-labelledby="titulo-como">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Como pedir</span>
+        <h2 class="section-title" id="titulo-como">Do pedido à sua mão em quatro passos</h2>
+      </div>
+      <ol class="passos">
+        {passos.map((p, i) => (
+          <li>
+            <span class="num">{i + 1}</span>
+            <h3>{p.titulo}</h3>
+            <p>{p.texto}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="onde-comprar" aria-labelledby="titulo-onde">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Onde comprar</span>
+        <h2 class="section-title" id="titulo-onde">Compre do jeito que preferir</h2>
+        <p class="lede">Fale direto com a gente ou encontre a Fazoo nos marketplaces em que você já compra.</p>
+      </div>
+      <div class="grade-lojas">
+        {site.marketplaces.map((m) =>
+          m.url ? (
+            <a class={`loja loja-${m.id}`} href={m.url} target="_blank" rel="noopener">
+              <Icon nome="loja" />
+              <strong>{m.nome}</strong>
+              <span>Ver loja <Icon nome="seta" /></span>
+            </a>
+          ) : (
+            <div class={`loja loja-${m.id} breve`}>
+              <Icon nome="loja" />
+              <strong>{m.nome}</strong>
+              <span>Em breve</span>
+            </div>
+          )
+        )}
+        <a class="loja loja-instagram" href={site.instagram.url} target="_blank" rel="noopener">
+          <Icon nome="instagram" />
+          <strong>Instagram</strong>
+          <span>@{site.instagram.usuario} <Icon nome="seta" /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section contato" id="contato" aria-labelledby="titulo-contato">
+    <div class="container">
+      <div class="faixa">
+        <div class="faixa-texto">
+          <span class="eyebrow">Vamos criar juntos?</span>
+          <h2 class="section-title" id="titulo-contato">Tem uma ideia? A gente transforma em peça.</h2>
+          <p class="lede">Mande uma mensagem com o que você imagina. Respondemos pelo WhatsApp com orçamento e prazo.</p>
+        </div>
+        <div class="faixa-acoes">
+          <a class="btn btn-white" href={linkWhatsApp()} target="_blank" rel="noopener">
+            <Icon nome="whatsapp" /> Chamar no WhatsApp
+          </a>
+          <a class="btn" href={site.instagram.url} target="_blank" rel="noopener">
+            <Icon nome="instagram" /> @{site.instagram.usuario}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const botoes = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-filtro]'));
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-grade] [data-categoria]'));
+
+  function filtrar(categoria: string) {
+    const valida = botoes.some((b) => b.dataset.filtro === categoria) ? categoria : 'todos';
+    botoes.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filtro === valida)));
+    let visiveis = 0;
+    cards.forEach((c) => {
+      c.hidden = valida !== 'todos' && c.dataset.categoria !== valida;
+      if (!c.hidden) visiveis++;
+    });
+    const vazio = document.querySelector<HTMLElement>('[data-vazio]');
+    if (vazio) vazio.hidden = visiveis > 0;
+    const link = document.querySelector<HTMLAnchorElement>('[data-vazio-link]');
+    const nome = botoes.find((b) => b.dataset.filtro === valida)?.textContent?.trim().toLowerCase();
+    if (link && nome) {
+      const url = new URL(link.href);
+      url.searchParams.set('text', `Olá! Quero saber dos ${nome} da Fazoo.`);
+      link.href = url.toString();
+    }
+  }
+
+  botoes.forEach((b) =>
+    b.addEventListener('click', () => {
+      const cat = b.dataset.filtro ?? 'todos';
+      filtrar(cat);
+      const url = new URL(window.location.href);
+      if (cat === 'todos') url.searchParams.delete('categoria');
+      else url.searchParams.set('categoria', cat);
+      history.replaceState(null, '', url);
+    })
+  );
+
+  // Os cards de categoria filtram sem recarregar a página.
+  document.querySelectorAll<HTMLAnchorElement>('[data-ir-categoria]').forEach((a) =>
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const cat = a.dataset.irCategoria ?? 'todos';
+      filtrar(cat);
+      history.replaceState(null, '', `/?categoria=${cat}#produtos`);
+      document.getElementById('produtos')?.scrollIntoView({ behavior: 'smooth' });
+    })
+  );
+
+  filtrar(new URLSearchParams(window.location.search).get('categoria') ?? 'todos');
+</script>
+
+<style>
+  /* Categorias */
+  .grade-cat {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .cat {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--glass);
+    text-decoration: none;
+    overflow: hidden;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+
+  .cat:hover {
+    transform: translateY(-4px);
+    border-color: rgba(26, 163, 255, 0.6);
+  }
+
+  .cat-arte {
+    aspect-ratio: 16 / 9;
+    max-width: 100%;
+    padding: 6px 30px 0;
+    background: linear-gradient(180deg, rgba(36, 87, 255, 0.12), transparent);
+  }
+
+  .cat-texto {
+    display: grid;
+    gap: 8px;
+    padding: 6px 24px 24px;
+    align-content: start;
+  }
+
+  .cat h3 {
+    font-size: 1.4rem;
+  }
+
+  .cat p {
+    color: var(--muted);
+  }
+
+  .cat-qtd {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    color: var(--cyan);
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+
+  .cat-qtd :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Produtos */
+  .cabeca-produtos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px 24px;
+    margin-bottom: clamp(32px, 5vw, 48px);
+  }
+
+  .cabeca-produtos .section-head {
+    margin-bottom: 0;
+  }
+
+  .filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .filtro {
+    min-height: 44px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--glass);
+    color: var(--muted);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.98rem;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .filtro:hover {
+    color: var(--ink);
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+
+  .filtro[aria-pressed='true'] {
+    background: var(--pink);
+    border-color: var(--pink);
+    color: #fff;
+    box-shadow: 0 8px 24px -10px rgba(242, 39, 240, 0.9);
+  }
+
+  .grade-produtos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: 24px;
+  }
+
+  .vazio {
+    display: grid;
+    justify-items: center;
+    gap: 18px;
+    padding: 48px 24px;
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    text-align: center;
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+
+  /* Como pedir */
+  .como {
+    background: linear-gradient(180deg, transparent, rgba(12, 17, 84, 0.55) 30%, rgba(12, 17, 84, 0.55) 70%, transparent);
+  }
+
+  .passos {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+
+  .passos::before {
+    content: '';
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    top: 28px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--pink));
+    opacity: 0.4;
+  }
+
+  .passos li {
+    position: relative;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+
+  .num {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--pink));
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    box-shadow: 0 0 0 8px var(--navy-900), 0 10px 30px -8px rgba(242, 39, 240, 0.7);
+    margin-bottom: 8px;
+  }
+
+  .passos h3 {
+    font-size: 1.3rem;
+  }
+
+  .passos p {
+    color: var(--muted);
+  }
+
+  /* Onde comprar */
+  .grade-lojas {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .loja {
+    display: grid;
+    gap: 10px;
+    padding: 24px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--glass);
+    text-decoration: none;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+
+  .loja > :global(svg) {
+    width: 30px;
+    height: 30px;
+    color: var(--cyan);
+  }
+
+  .loja strong {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  .loja span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+  }
+
+  .loja span :global(svg) {
+    width: 16px;
+    height: 16px;
+  }
+
+  a.loja:hover {
+    transform: translateY(-4px);
+    border-color: rgba(242, 39, 240, 0.6);
+  }
+
+  .loja.breve {
+    border-style: dashed;
+  }
+
+  .loja.breve span {
+    justify-self: start;
+    padding: 2px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    font-size: 0.85rem;
+  }
+
+  .loja-instagram > :global(svg) {
+    color: var(--pink);
+  }
+
+  /* Contato */
+  .faixa {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    padding: clamp(32px, 6vw, 64px);
+    border-radius: calc(var(--radius) + 10px);
+    background:
+      radial-gradient(40rem 20rem at 100% 0%, rgba(242, 39, 240, 0.55), transparent 60%),
+      radial-gradient(30rem 20rem at 0% 100%, rgba(26, 163, 255, 0.45), transparent 60%),
+      linear-gradient(135deg, var(--blue), var(--violet));
+    box-shadow: 0 40px 80px -40px rgba(123, 43, 255, 0.9);
+  }
+
+  .faixa-texto {
+    display: grid;
+    gap: 14px;
+    max-width: 620px;
+    min-width: 0;
+  }
+
+  .faixa .eyebrow {
+    color: #fff;
+    opacity: 0.85;
+  }
+
+  .faixa .lede {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .faixa-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .faixa-acoes .btn:not(.btn-white) {
+    background: rgba(4, 6, 42, 0.35);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  @media (max-width: 960px) {
+    .grade-cat,
+    .passos,
+    .grade-lojas {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .passos::before {
+      display: none;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .grade-cat {
+      grid-template-columns: 1fr;
+    }
+
+    .cat {
+      grid-template-columns: 40% 1fr;
+      grid-template-rows: none;
+      align-items: center;
+    }
+
+    .cat-arte {
+      aspect-ratio: 1;
+      padding: 10px;
+    }
+
+    .cat-texto {
+      padding: 18px 18px 18px 4px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .passos {
+      grid-template-columns: 1fr;
+    }
+
+    .faixa-acoes,
+    .faixa-acoes .btn {
+      width: 100%;
+    }
+  }
+</style>

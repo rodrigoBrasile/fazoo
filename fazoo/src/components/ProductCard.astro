@@ -1,0 +1,156 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import ProductArt from './ProductArt.astro';
+import Icon from './Icon.astro';
+import { categorias } from '../config';
+
+interface Props {
+  produto: CollectionEntry<'produtos'>;
+  indice?: number;
+}
+
+const { produto, indice = 0 } = Astro.props;
+const { titulo, categoria, resumo, fotos, exemplo } = produto.data;
+const foto = fotos[0];
+---
+
+<a class="card" href={`/produtos/${produto.id}`} data-categoria={categoria}>
+  <div class="midia">
+    {foto ? (
+      <>
+        <Image class="fundo" src={foto} alt="" width={64} aria-hidden="true" />
+        <Image class="foto" src={foto} alt={titulo} widths={[360, 560, 760]} sizes="(max-width: 640px) 100vw, 380px" />
+      </>
+    ) : (
+      <ProductArt categoria={categoria} id={produto.id} variante={indice} />
+    )}
+    {exemplo && <span class="exemplo" title="Produto de exemplo até a foto real chegar">Exemplo</span>}
+  </div>
+  <div class="texto">
+    <span class="categoria">{categorias[categoria].nome}</span>
+    <h3>{titulo}</h3>
+    <p>{resumo}</p>
+    <span class="ver">
+      Ver detalhes <Icon nome="seta" />
+    </span>
+  </div>
+</a>
+
+<style>
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
+    text-decoration: none;
+    overflow: hidden;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(242, 39, 240, 0.55);
+    box-shadow: 0 26px 50px -24px rgba(242, 39, 240, 0.55);
+  }
+
+  .midia {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    max-width: 100%;
+    background: radial-gradient(circle at 70% 20%, rgba(123, 43, 255, 0.35), transparent 60%), var(--navy-800);
+    overflow: hidden;
+  }
+
+  .midia :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease;
+  }
+
+  .midia :global(.fundo) {
+    object-fit: cover;
+    filter: blur(22px) saturate(140%) brightness(0.6);
+    transform: scale(1.2);
+  }
+
+  .midia :global(.foto) {
+    object-fit: contain;
+  }
+
+  .midia :global(.arte) {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.5s ease;
+  }
+
+  .card:hover .midia :global(.foto),
+  .card:hover .midia :global(.arte) {
+    transform: scale(1.05);
+  }
+
+  .exemplo {
+    position: absolute;
+    z-index: 1;
+    top: 14px;
+    right: 14px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--navy-900);
+    background: #fff;
+    opacity: 0.85;
+  }
+
+  .categoria {
+    color: var(--cyan);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .texto {
+    display: grid;
+    gap: 8px;
+    padding: 20px 22px 22px;
+    flex: 1;
+    align-content: start;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  p {
+    color: var(--muted);
+    font-size: 0.98rem;
+  }
+
+  .ver {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    color: var(--pink-soft);
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+
+  .ver :global(svg) {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.25s ease;
+  }
+
+  .card:hover .ver :global(svg) {
+    transform: translateX(4px);
+  }
+</style>

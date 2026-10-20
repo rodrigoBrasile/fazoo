@@ -1,0 +1,208 @@
+---
+import Icon from './Icon.astro';
+import { linkWhatsApp } from '../config';
+
+const links = [
+  { href: '/#produtos', texto: 'Produtos' },
+  { href: '/#como-pedir', texto: 'Como pedir' },
+  { href: '/#onde-comprar', texto: 'Onde comprar' },
+  { href: '/#contato', texto: 'Contato' },
+];
+---
+
+<header class="topo" data-topo>
+  <div class="container barra">
+    <a class="marca" href="/" aria-label="Fazoo, página inicial">
+      <img src="/logo-fazoo-web.png" alt="Fazoo" width="640" height="260" />
+    </a>
+
+    <nav class="nav" id="menu-principal" aria-label="Principal">
+      <ul>
+        {links.map((l) => (
+          <li>
+            <a href={l.href}>{l.texto}</a>
+          </li>
+        ))}
+      </ul>
+      <a class="btn btn-pink nav-cta" href={linkWhatsApp()} target="_blank" rel="noopener">
+        <Icon nome="whatsapp" />
+        Fale com a gente
+      </a>
+    </nav>
+
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu-principal" data-menu-btn>
+      <span class="visually-hidden">Abrir menu</span>
+      <Icon nome="menu" class="ico-abrir" />
+      <Icon nome="fechar" class="ico-fechar" />
+    </button>
+  </div>
+</header>
+
+<script>
+  const topo = document.querySelector<HTMLElement>('[data-topo]');
+  const botao = document.querySelector<HTMLButtonElement>('[data-menu-btn]');
+
+  const aoRolar = () => topo?.classList.toggle('rolou', window.scrollY > 12);
+  aoRolar();
+  window.addEventListener('scroll', aoRolar, { passive: true });
+
+  const fechar = () => {
+    topo?.classList.remove('aberto');
+    botao?.setAttribute('aria-expanded', 'false');
+  };
+
+  botao?.addEventListener('click', () => {
+    const aberto = topo?.classList.toggle('aberto') ?? false;
+    botao.setAttribute('aria-expanded', String(aberto));
+  });
+
+  topo?.querySelectorAll('.nav a').forEach((a) => a.addEventListener('click', fechar));
+</script>
+
+<style>
+  .topo {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    transition: background 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease;
+    border-bottom: 1px solid transparent;
+  }
+
+  .topo.rolou,
+  .topo.aberto {
+    background: rgba(7, 10, 58, 0.78);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-bottom-color: var(--line);
+  }
+
+  .barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    min-height: 84px;
+  }
+
+  .marca img {
+    width: auto;
+    height: 58px;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .nav ul {
+    display: flex;
+    gap: 26px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav ul a {
+    position: relative;
+    color: var(--muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  .nav ul a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--grad-brand);
+    transform: scaleX(0);
+    transition: transform 0.25s ease;
+  }
+
+  .nav ul a:hover {
+    color: var(--ink);
+  }
+
+  .nav ul a:hover::after {
+    transform: scaleX(1);
+  }
+
+  .menu-btn {
+    display: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: var(--glass);
+    color: var(--ink);
+    cursor: pointer;
+    place-items: center;
+  }
+
+  .menu-btn :global(svg) {
+    width: 24px;
+    height: 24px;
+    grid-area: 1 / 1;
+  }
+
+  .menu-btn :global(.ico-fechar) {
+    display: none;
+  }
+
+  .aberto .menu-btn :global(.ico-abrir) {
+    display: none;
+  }
+
+  .aberto .menu-btn :global(.ico-fechar) {
+    display: block;
+  }
+
+  @media (max-width: 900px) {
+    .menu-btn {
+      display: grid;
+    }
+
+    .marca img {
+      height: 48px;
+    }
+
+    .nav {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      display: none;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+      padding: 12px var(--gutter) 28px;
+      background: rgba(7, 10, 58, 0.97);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .aberto .nav {
+      display: flex;
+    }
+
+    .nav ul {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .nav ul a {
+      display: block;
+      padding: 14px 0;
+      font-size: 1.15rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav ul a::after {
+      display: none;
+    }
+  }
+</style>

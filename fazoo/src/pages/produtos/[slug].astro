@@ -1,0 +1,283 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import ProductArt from '../../components/ProductArt.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import Icon from '../../components/Icon.astro';
+import { categorias, linkWhatsApp } from '../../config';
+
+export async function getStaticPaths() {
+  const produtos = (await getCollection('produtos')).sort((a, b) => a.data.ordem - b.data.ordem);
+  return produtos.map((produto, indice) => ({
+    params: { slug: produto.id },
+    props: { produto, indice, todos: produtos },
+  }));
+}
+
+interface Props {
+  produto: CollectionEntry<'produtos'>;
+  indice: number;
+  todos: CollectionEntry<'produtos'>[];
+}
+
+const { produto, indice, todos } = Astro.props;
+const { titulo, categoria, resumo, fotos, detalhes, links, exemplo } = produto.data;
+const { Content } = await render(produto);
+
+const urlProduto = new URL(`/produtos/${produto.id}`, Astro.site).href;
+const mensagem = `Olá! Tenho interesse no produto "${titulo}" que vi no site da Fazoo: ${urlProduto}`;
+
+const lojas = [
+  { nome: 'Mercado Livre', url: links.mercadoLivre },
+  { nome: 'Shopee', url: links.shopee },
+  { nome: 'Amazon', url: links.amazon },
+].filter((l) => l.url);
+
+const relacionados = todos
+  .filter((p) => p.id !== produto.id)
+  .sort((a, b) => Number(b.data.categoria === categoria) - Number(a.data.categoria === categoria))
+  .slice(0, 3);
+---
+
+<Base titulo={titulo} descricao={resumo}>
+  <section class="section produto">
+    <div class="container">
+      <a class="voltar" href="/#produtos"><Icon nome="voltar" /> Voltar para a vitrine</a>
+
+      <div class="grade">
+        <div class="galeria">
+          <div class:list={['principal', { 'com-arte': !fotos[0] }]}>
+            {fotos[0] ? (
+              <Image src={fotos[0]} alt={titulo} widths={[480, 720, 1080]} sizes="(max-width: 860px) 100vw, 560px" loading="eager" />
+            ) : (
+              <ProductArt categoria={categoria} id={`p-${produto.id}`} variante={indice} />
+            )}
+          </div>
+          {fotos.length > 1 && (
+            <div class="miniaturas">
+              {fotos.slice(1).map((f, i) => (
+                <Image src={f} alt={`${titulo}, foto ${i + 2}`} widths={[200, 400]} sizes="160px" />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div class="info">
+          <span class="chip">{categorias[categoria].nome}</span>
+          <h1>{titulo}</h1>
+          <p class="lede">{resumo}</p>
+
+          {exemplo && (
+            <p class="aviso">Produto de exemplo. A foto e as informações reais entram em breve.</p>
+          )}
+
+          <div class="descricao"><Content /></div>
+
+          {detalhes.length > 0 && (
+            <ul class="detalhes">
+              {detalhes.map((d) => {
+                const [rotulo, ...resto] = d.split(':');
+                return resto.length ? (
+                  <li><span>{rotulo}</span><strong>{resto.join(':').trim()}</strong></li>
+                ) : (
+                  <li><strong>{d}</strong></li>
+                );
+              })}
+            </ul>
+          )}
+
+          <div class="acoes">
+            <a class="btn btn-pink" href={linkWhatsApp(mensagem)} target="_blank" rel="noopener">
+              <Icon nome="whatsapp" /> Pedir pelo WhatsApp
+            </a>
+            {lojas.map((l) => (
+              <a class="btn" href={l.url} target="_blank" rel="noopener">
+                <Icon nome="loja" /> Comprar no {l.nome}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section relacionados" aria-labelledby="titulo-rel">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Veja também</span>
+        <h2 class="section-title" id="titulo-rel">Outros produtos</h2>
+      </div>
+      <div class="grade-rel">
+        {relacionados.map((p) => <ProductCard produto={p} indice={todos.indexOf(p)} />)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .produto {
+    padding-top: clamp(24px, 4vw, 40px);
+  }
+
+  .voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    color: var(--muted);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .voltar:hover {
+    color: var(--ink);
+  }
+
+  .voltar :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  .grade {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(28px, 5vw, 64px);
+    align-items: start;
+  }
+
+  .galeria {
+    display: grid;
+    gap: 12px;
+    position: sticky;
+    top: 104px;
+  }
+
+  .principal {
+    max-width: 100%;
+    border-radius: calc(var(--radius) + 6px);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 70% 20%, rgba(123, 43, 255, 0.4), transparent 60%), var(--navy-800);
+  }
+
+  .principal.com-arte {
+    aspect-ratio: 1;
+  }
+
+  .principal :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  .principal :global(.arte) {
+    padding: 8%;
+  }
+
+  .miniaturas {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .miniaturas :global(img) {
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line);
+  }
+
+  .info {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+    min-width: 0;
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 4.6vw, 3.4rem);
+    font-weight: 700;
+  }
+
+  .aviso {
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .descricao {
+    color: var(--ink);
+    max-width: 60ch;
+  }
+
+  .descricao :global(p + p) {
+    margin-top: 12px;
+  }
+
+  .detalhes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    border-top: 1px solid var(--line);
+  }
+
+  .detalhes li {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .detalhes span {
+    color: var(--muted);
+  }
+
+  .detalhes strong {
+    font-weight: 500;
+    text-align: right;
+  }
+
+  .acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  .grade-rel {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  @media (max-width: 860px) {
+    .grade {
+      grid-template-columns: 1fr;
+    }
+
+    .galeria {
+      position: static;
+    }
+
+    .grade-rel {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .grade-rel {
+      grid-template-columns: 1fr;
+    }
+
+    .acoes,
+    .acoes .btn {
+      width: 100%;
+    }
+  }
+</style>
